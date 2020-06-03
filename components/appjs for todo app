@@ -1,0 +1,104 @@
+import React, { useState } from 'react';
+import {
+  SafeAreaView,
+  StyleSheet,
+  ScrollView,
+  View,
+  Text,
+  StatusBar,
+  Button,
+  TextInput,
+  FlatList,
+  Alert,
+  TouchableWithoutFeedback,
+  Keyboard
+} from 'react-native';
+import Header from './components/Header'
+import TodoItem from './components/TodoItem'
+import AddTodo from './components/AddTodo';
+
+
+
+
+
+export default function App() {
+  const [toDos, setTodos] = useState([
+    {text: 'buy coffee', id:1},
+    {text: 'create an app', id:2},
+    {text: 'play on the switch', id:3},
+    
+   ])
+
+   const pressHandler= (key) => {
+    setTodos((prevTodos) => {
+      return prevTodos.filter(todo => todo.id != key);
+    });
+  }
+
+    const submitHandler = (text) =>{
+      Keyboard.dismiss()
+      if(text.length > 3){
+        setTodos( (prevTodos) => {
+          return [
+            {text: text, id: Math.random()},
+            ...prevTodos
+          ];
+          
+        })
+      }else{
+        Alert.alert('OPPS!', 'Todos must be over 3 chars long',
+        [
+          {text: 'understood', onPress: () => console.log('alert closed')}
+        ])
+      }
+
+      
+    }
+   
+
+
+  return (
+    <TouchableWithoutFeedback onPress= {() => {
+          Keyboard.dismiss()
+          console.log('keyboard dissmissed')
+      }}>
+        <View style={styles.container}>
+          
+          <Header />
+          <View style={styles.content}>
+            
+            <AddTodo submitHandler={submitHandler}/>
+            <View style={styles.list}>
+              <FlatList
+                keyExtractor={(item) => item.id}
+                data={toDos}              
+                renderItem={({ item }) => (
+                  <TodoItem item={ item } pressHandler={pressHandler}/>
+                )}
+              />
+
+            </View>
+          </View>
+        </View>
+    </TouchableWithoutFeedback>
+  );
+};
+
+const styles = StyleSheet.create({
+ container:{
+   flex: 1,
+   backgroundColor: '#fff'    
+ },
+
+ content:{
+   flex:1,
+   padding:40,
+ },
+
+ list:{
+   flex:1,
+  marginTop: 20
+ }
+ 
+
+});
